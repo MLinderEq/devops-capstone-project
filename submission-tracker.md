@@ -361,26 +361,47 @@ python                                       3.9-slim  <base-id>      <weeks> ag
 ```
 Note: rows 1 and 2 share the same IMAGE ID — `docker tag` aliases, doesn't duplicate layers. Rubric expects Name, Tag, Image ID, Created, Size (all default columns).
 
-**Task 31 — `kube-deploy-accounts`** (output of `oc get all` after `oc apply` + `oc expose`)
+**Task 31 — `kube-deploy-accounts`** (output of `oc get all` after `oc apply -f deploy/` + `oc expose service/accounts`)
+
+Realistic example — paste the actual hashes/IPs/ages from your lab over the example values:
+
 ```
 NAME                            READY   STATUS    RESTARTS   AGE
-pod/accounts-<hash>-<suffix>    1/1     Running   0          <age>
-pod/postgresql-1-<suffix>       1/1     Running   0          <age>
+pod/accounts-6d4b9f7c8d-h7p9k   1/1     Running   0          47s
+pod/postgresql-1-zr8mq          1/1     Running   0          12m
 
-NAME                                  DESIRED   CURRENT   READY   AGE
-replicaset.apps/accounts-<hash>       1         1         1       <age>
+NAME                                    DESIRED   CURRENT   READY   AGE
+replicaset.apps/accounts-6d4b9f7c8d     1         1         1       47s
+
+NAME                                            DESIRED   CURRENT   READY   AGE
+deploymentconfig.apps.openshift.io/postgresql   1         1         1       12m
 
 NAME                       READY   UP-TO-DATE   AVAILABLE   AGE
-deployment.apps/accounts   1/1     1            1           <age>
+deployment.apps/accounts   1/1     1            1           47s
 
 NAME                 TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
-service/accounts     ClusterIP   <cluster-ip>     <none>        8080/TCP   <age>
-service/postgresql   ClusterIP   <cluster-ip>     <none>        5432/TCP   <age>
+service/accounts     ClusterIP   172.30.114.218   <none>        8080/TCP   47s
+service/postgresql   ClusterIP   172.30.207.42    <none>        5432/TCP   12m
 
-NAME                                HOST/PORT                                                       PATH   SERVICES   PORT   TERMINATION   WILDCARD
-route.route.openshift.io/accounts   accounts-<ns>.<cluster>.containers.appdomain.cloud                     accounts   http                 None
+NAME                                HOST/PORT                                                                       PATH   SERVICES   PORT   TERMINATION   WILDCARD
+route.route.openshift.io/accounts   accounts-sn-labs-mlinder.us-south.containers.appdomain.cloud                           accounts   http                 None
+
+NAME                                                                IMAGE REPOSITORY                                                                                          TAGS    UPDATED
+imagestream.image.openshift.io/postgresql                           image-registry.openshift-image-registry.svc:5000/sn-labs-mlinder/postgresql                               latest  12 minutes ago
 ```
-Required sections: deployment, pods, replica sets, service — all four present. The `route.route.openshift.io/accounts` row appears only after `oc expose service/accounts`.
+
+Required sections (per rubric wording "deployment, pods, replica sets, and service"): all four present.
+- **deployment** → `deployment.apps/accounts` (your service) + `deploymentconfig.apps.openshift.io/postgresql` (the pre-provisioned DB)
+- **pods** → 2 rows: `accounts-…` and `postgresql-1-…`
+- **replica sets** → `replicaset.apps/accounts-<hash>`
+- **service** → `service/accounts` (your service) + `service/postgresql` (pre-provisioned)
+
+The `route.route.openshift.io/accounts` row appears only after `oc expose service/accounts`. The `imagestream.image.openshift.io/postgresql` row is added by OpenShift's image registry when the lab pre-provisioned Postgres; it'll be there even without your work.
+
+If your output is missing the deployment, pods, or service for `accounts`, check that:
+1. `oc apply -f deploy/` ran without errors
+2. `deploy/deployment.yaml` references your ICR-tagged image (`us.icr.io/$SN_ICR_NAMESPACE/accounts:1`), not the local `accounts:1` tag
+3. `oc describe pod/accounts-…` for any pod stuck in `ImagePullBackOff` or `CrashLoopBackOff`
 
 **Task 26 — `kube-app-output`** (JSON body from `GET /` on the exposed route)
 ```json
