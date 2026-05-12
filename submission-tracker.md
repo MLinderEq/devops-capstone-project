@@ -391,6 +391,60 @@ Required sections: deployment, pods, replica sets, service — all four present.
 ```
 Literal response from `service/routes.py:index()`. Capture the JSON body only — not the HTTP headers, not the browser chrome.
 
+**Task 32 — `pipelinerun.txt`** (output of `tkn pipelinerun logs <run-name>` after the CD pipeline completes)
+
+The capstone CD pipeline runs six Tekton tasks in order: `init` (cleanup) → `clone` → `lint` → `tests` → `build` → `deploy`. The logs interleave each task's output, prefixed with `[<task> : <step>]`:
+
+```
+[init : remove] Removing all files from /workspace/source ...
+
+[clone : clone] + /ko-app/git-init -url=https://github.com/MLinderEq/devops-capstone-project.git -revision=main -path=/workspace/output/
+[clone : clone] {"level":"info","ts":<ts>,"caller":"git/git.go:165","msg":"Successfully cloned https://github.com/MLinderEq/devops-capstone-project.git @ <commit-sha> (grafted, HEAD, origin/main) in path /workspace/output/"}
+
+[lint : flake8] + flake8 service --count --max-complexity=10 --max-line-length=127 --statistics
+[lint : flake8] 0
+
+[tests : nose] + nosetests
+[tests : nose]
+[tests : nose] Test Flask CLI Commands
+[tests : nose] - It should call the db-create command
+[tests : nose]
+[tests : nose] Test Cases for Account Model
+[tests : nose] - It should Create an account and add it to the database
+[tests : nose] ... (all 26 tests) ...
+[tests : nose] - It should not Update an Account that is not found
+[tests : nose]
+[tests : nose] Name                               Stmts   Miss  Cover   Missing
+[tests : nose] ----------------------------------------------------------------
+[tests : nose] service/routes.py                    56      0   100%
+[tests : nose] ... (etc) ...
+[tests : nose] TOTAL                               249     12    95%
+[tests : nose] ----------------------------------------------------------------
+[tests : nose] Ran 26 tests in <X>s
+[tests : nose] OK
+
+[build : build] STEP 1/8: FROM python:3.9-slim
+[build : build] STEP 2/8: WORKDIR /app
+[build : build] STEP 3/8: COPY requirements.txt .
+[build : build] STEP 4/8: RUN python -m pip install --no-cache-dir -U pip wheel && pip install --no-cache-dir -r requirements.txt
+[build : build] ...
+[build : build] STEP 5/8: COPY service/ ./service/
+[build : build] STEP 6/8: RUN useradd --uid 1000 theia && chown -R theia /app
+[build : build] STEP 7/8: USER theia
+[build : build] STEP 8/8: CMD ["gunicorn","--bind=0.0.0.0:8080","--log-level=info","service:app"]
+[build : build] COMMIT image-registry.openshift-image-registry.svc:5000/<ns>/accounts:1
+[build : build] Successfully built <image-id>
+[build : push] Getting image source signatures
+[build : push] Copying blob <hash> done
+[build : push] Writing manifest to image destination
+[build : push] Storing signatures
+
+[deploy : apply] deployment.apps/accounts configured
+[deploy : apply] service/accounts unchanged
+```
+
+Capture the full `tkn pipelinerun logs <name>` output, not just the success line at the end. The rubric (5 pts — largest single task) wants to see every task's output. Save as `pipelinerun.txt`.
+
 ## Module 5 — CD Pipeline (Tekton + OpenShift)
 
 User story #10 — "Create a CD pipeline to automate deployment to Kubernetes" (XL=13, Sprint 3). Work branch: `cd-pipeline`. Tekton manifests live in `tekton/` (pvc.yaml, pipeline.yaml, tasks.yaml — starter scaffolding already committed on main).
