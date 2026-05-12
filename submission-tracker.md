@@ -21,13 +21,13 @@ Tracks answers to all 33 graded tasks across the 6 modules. Status legend: ✅ d
 | 15 | 2 | ✅ | `rest-read-done` (curl output below) |
 | 16 | 2 | ✅ | `rest-update-done` (curl output below) |
 | 17 | 2 | ✅ | `rest-delete-done` (curl output below) |
-| 18 | 1 | ⏳ | Module 3 — Sprint 2 plan screenshot |
-| 19 | 2 | ⏳ | Module 3 — `ci-workflow-done` GHA output |
-| 20 | 1 | ⏳ | Module 3 — `ci-kanban-done` |
-| 21 | 4 | ⏳ | Module 3 — `ci-build.yaml` URL |
-| 22 | 1 | ⏳ | Module 4 — `__init__.py` Talisman URL |
-| 23 | 1 | ⏳ | Module 4 — `security-headers-done` |
-| 24 | 1 | ⏳ | Module 4 — `security-kanban-done` |
+| 18 | 1 | 📸 | `sprint2-plan` — taken (Sprint 2 sprint-plan) |
+| 19 | 2 | ✅ | `ci-workflow-done` (GHA output below) |
+| 20 | 1 | 📸 | `ci-kanban-done` — CI story in Done |
+| 21 | 4 | ✅ | ci-build.yaml URL |
+| 22 | 1 | ✅ | __init__.py URL (Talisman + CORS) |
+| 23 | 1 | ✅ | `security-headers-done` (nosetests output below) |
+| 24 | 1 | 📸 | `security-kanban-done` — Security story in Done |
 | 25 | 1 | ⏳ | Module 5 — `sprint3-plan` |
 | 26 | 1 | ⏳ | Module 5 — `kube-app-output` |
 | 27 | 1 | ⏳ | Module 5 — `kube-docker-done` |
@@ -38,7 +38,7 @@ Tracks answers to all 33 graded tasks across the 6 modules. Status legend: ✅ d
 | 32 | 5 | ⏳ | Module 6 — `pipelinerun.txt` |
 | 33 | 1 | ⏳ | Module 6 — `cd-pipeline-done` |
 
-**Earned so far: 19/55 in completed modules · Remaining: 36 pts**
+**Earned so far: 27/55 across Modules 1–3 · Remaining: 28 pts (Modules 5–6)**
 
 ---
 
@@ -151,16 +151,156 @@ Connection: close
 
 ---
 
-## Module 3 — CI (pending)
-- Task 18: add 2 stories to Sprint Backlog (CI + Security from current Product Backlog); screenshot `sprint2-plan.png`
-- Task 19: terminal output of `nosetests` from GitHub Actions run, saved as `ci-workflow-done`
-- Task 20: move CI story to Done; screenshot `ci-kanban-done.png`
-- Task 21: public URL of `.github/workflows/ci-build.yaml` (or `ci.yml`)
+## Module 3 — CI + Security
 
-## Module 4 — Security (pending)
-- Task 22: public URL of `service/__init__.py` with Talisman init
-- Task 23: nosetests output proving headers + CORS pass, saved as `security-headers-done`
-- Task 24: move Security story to Done; screenshot `security-kanban-done.png`
+### Task 18 — sprint2-plan
+Sprint Backlog held #6 (CI) and #7 (Security), both Sprint=Sprint 2, M=5 each. Screenshot taken at https://github.com/users/MLinderEq/projects/1 prior to coding.
+
+### Task 19 (2 pts) — ci-workflow-done (terminal text)
+Workflow run: https://github.com/MLinderEq/devops-capstone-project/actions/runs/25742102017 (build in 43s, all steps ✓)
+
+```
+Run flake8 service --count --select=E9,F63,F7,F82 --show-source --statistics
+flake8 service --count --max-complexity=10 --max-line-length=127 --statistics
+0
+0
+
+Run nosetests
+env:
+  DATABASE_URI: postgresql://***@postgres:5432/testdb
+
+Test Flask CLI Commands
+- It should call the db-create command
+
+Test Cases for Account Model
+- It should Create an account and add it to the database
+- It should Create an Account and assert that it exists
+- It should Delete an account from the database
+- It should Deserialize an account
+- It should not Deserialize an account with a KeyError
+- It should not Deserialize an account with a TypeError
+- It should Find an Account by name
+- It should List all Accounts in the database
+- It should Read an account
+- It should Serialize an account
+- It should Update an account
+
+Account Service Tests
+- It should not Create an Account when sending the wrong data
+- It should Create a new Account
+- It should Delete an Account
+- It should Read a single Account
+- It should List all Accounts
+- It should not Read an Account that is not found
+- It should be healthy
+- It should get 200_OK from the Home Page
+- It should not allow an illegal method call
+- It should not Create an Account when sending the wrong media type
+- It should Update an existing Account
+- It should not Update an Account that is not found
+
+Name                               Stmts   Miss  Cover   Missing
+----------------------------------------------------------------
+service/__init__.py                   18      3    83%   32-35
+service/common/__init__.py             0      0   100%
+service/common/cli_commands.py         7      0   100%
+service/common/error_handlers.py      28      0   100%
+service/common/log_handlers.py        10      1    90%   21
+service/common/status.py              46      0   100%
+service/config.py                     11      5    55%   12-16
+service/models.py                     69      3    96%   32, 98, 127
+service/routes.py                     56      0   100%
+----------------------------------------------------------------
+TOTAL                                245     12    95%
+----------------------------------------------------------------------
+Ran 24 tests in 0.745s
+
+OK
+```
+
+### Task 20 — ci-kanban-done
+**SCREENSHOT NEEDED.** Open board, capture "Need the ability to automate continuous integration checks" in Done column.
+
+### Task 21 (4 pts) — ci-build.yaml URL
+https://github.com/MLinderEq/devops-capstone-project/blob/main/.github/workflows/ci-build.yaml
+
+### Task 22 (1 pt) — __init__.py URL (Talisman)
+https://github.com/MLinderEq/devops-capstone-project/blob/main/service/__init__.py
+
+### Task 23 (1 pt) — security-headers-done (nosetests output)
+PR #13 CI run: https://github.com/MLinderEq/devops-capstone-project/actions/runs/25742752474 (26 tests passing, 95% coverage). Local run:
+
+```
+Test Flask CLI Commands
+- It should call the db-create command
+
+Test Cases for Account Model
+- It should Create an account and add it to the database
+- It should Create an Account and assert that it exists
+- It should Delete an account from the database
+- It should Deserialize an account
+- It should not Deserialize an account with a KeyError
+- It should not Deserialize an account with a TypeError
+- It should Find an Account by name
+- It should List all Accounts in the database
+- It should Read an account
+- It should Serialize an account
+- It should Update an account
+
+Account Service Tests
+- It should not Create an Account when sending the wrong data
+- It should return a CORS header
+- It should Create a new Account
+- It should Delete an Account
+- It should Read a single Account
+- It should List all Accounts
+- It should not Read an Account that is not found
+- It should be healthy
+- It should get 200_OK from the Home Page
+- It should not allow an illegal method call
+- It should return security headers
+- It should not Create an Account when sending the wrong media type
+- It should Update an existing Account
+- It should not Update an Account that is not found
+
+Name                               Stmts   Miss  Cover   Missing
+----------------------------------------------------------------
+service/__init__.py                   22      3    86%   38-41
+service/common/__init__.py             0      0   100%
+service/common/cli_commands.py         7      0   100%
+service/common/error_handlers.py      28      0   100%
+service/common/log_handlers.py        10      1    90%   21
+service/common/status.py              46      0   100%
+service/config.py                     11      5    55%   12-16
+service/models.py                     69      3    96%   32, 98, 127
+service/routes.py                     56      0   100%
+----------------------------------------------------------------
+TOTAL                                249     12    95%
+----------------------------------------------------------------------
+Ran 26 tests in 0.457s
+
+OK
+```
+
+Live curl confirmation (after `talisman.force_https = True` in production):
+```
+$ curl -is -H "X-Forwarded-Proto: https" http://example:8000/
+HTTP/1.1 200 OK
+Access-Control-Allow-Origin: *
+X-Frame-Options: SAMEORIGIN
+X-XSS-Protection: 1; mode=block
+X-Content-Type-Options: nosniff
+Content-Security-Policy: default-src 'self'; object-src 'none'
+Strict-Transport-Security: max-age=31556926; includeSubDomains
+Referrer-Policy: strict-origin-when-cross-origin
+```
+
+### Task 24 — security-kanban-done
+**SCREENSHOT NEEDED.** Open board, capture "Need to add security headers and CORS policies" in Done column.
+
+### Checklist-only screenshots (not graded, but rubric expects)
+- **ci-badge-done** — README on main showing green CI Build badge: https://github.com/MLinderEq/devops-capstone-project
+- **security-code-done** — service/__init__.py showing Talisman + CORS code: https://github.com/MLinderEq/devops-capstone-project/blob/main/service/__init__.py
 
 ## Module 5 — Container & Kubernetes (pending)
 - Task 25: add 3 stories to Sprint 3 (Docker + K8s + CD); screenshot `sprint3-plan.png`
@@ -186,6 +326,8 @@ Connection: close
 | setup.cfg | https://github.com/MLinderEq/devops-capstone-project/blob/main/setup.cfg |
 | Kanban board | https://github.com/users/MLinderEq/projects/1 |
 | Sprint 1 PR | https://github.com/MLinderEq/devops-capstone-project/pull/11 |
-| ci-build.yaml | _pending (Module 3)_ |
-| __init__.py (Talisman) | _pending (Module 4)_ |
+| ci-build.yaml | https://github.com/MLinderEq/devops-capstone-project/blob/main/.github/workflows/ci-build.yaml |
+| __init__.py (Talisman) | https://github.com/MLinderEq/devops-capstone-project/blob/main/service/__init__.py |
 | Dockerfile | _pending (Module 5)_ |
+| Sprint 2 PR (CI) | https://github.com/MLinderEq/devops-capstone-project/pull/12 |
+| Sprint 2 PR (Security) | https://github.com/MLinderEq/devops-capstone-project/pull/13 |
