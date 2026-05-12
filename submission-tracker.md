@@ -28,17 +28,17 @@ Tracks answers to all 33 graded tasks across the 6 modules. Status legend: ✅ d
 | 22 | 1 | ✅ | __init__.py URL (Talisman + CORS) |
 | 23 | 1 | ✅ | `security-headers-done` (nosetests output below) |
 | 24 | 1 | 📸 | `security-kanban-done` — Security story in Done |
-| 25 | 1 | ⏳ | Module 5 — `sprint3-plan` |
-| 26 | 1 | ⏳ | Module 5 — `kube-app-output` |
-| 27 | 1 | ⏳ | Module 5 — `kube-docker-done` |
-| 28 | 1 | ⏳ | Module 5 — `kube-kubernetes-done` |
-| 29 | 2 | ⏳ | Module 5 — Dockerfile URL |
-| 30 | 2 | ⏳ | Module 5 — `kube-images` |
-| 31 | 2 | ⏳ | Module 5 — `kube-deploy-accounts` |
+| 25 | 1 | ✅ | `sprint3-plan` — committed |
+| 26 | 1 | 🌥️ | `kube-app-output` — needs IBM Cloud IDE run |
+| 27 | 1 | 📸 | `kube-docker-done` — Docker story in Done |
+| 28 | 1 | 📸 | `kube-kubernetes-done` — K8s story in Done |
+| 29 | 2 | ✅ | Dockerfile URL |
+| 30 | 2 | 🌥️ | `kube-images` — needs IBM Cloud IDE run |
+| 31 | 2 | 🌥️ | `kube-deploy-accounts` — needs IBM Cloud IDE run |
 | 32 | 5 | ⏳ | Module 6 — `pipelinerun.txt` |
 | 33 | 1 | ⏳ | Module 6 — `cd-pipeline-done` |
 
-**Earned so far: 27/55 across Modules 1–3 · Remaining: 28 pts (Modules 5–6)**
+**Earned so far: 31/55 (after Modules 1–4) · Remaining: 24 pts (Module 4 cluster runs + Module 6 CD)**
 
 ---
 
@@ -302,14 +302,51 @@ Referrer-Policy: strict-origin-when-cross-origin
 - **ci-badge-done** — README on main showing green CI Build badge: https://github.com/MLinderEq/devops-capstone-project
 - **security-code-done** — service/__init__.py showing Talisman + CORS code: https://github.com/MLinderEq/devops-capstone-project/blob/main/service/__init__.py
 
-## Module 5 — Container & Kubernetes (pending)
-- Task 25: add 3 stories to Sprint 3 (Docker + K8s + CD); screenshot `sprint3-plan.png`
-- Task 26: JSON from the deployed app on port 8080, saved as `kube-app-output`
-- Task 27: move Docker story to Done; screenshot `kube-docker-done.png`
-- Task 28: move K8s deploy story to Done; screenshot `kube-kubernetes-done.png`
-- Task 29: public URL of `Dockerfile`
-- Task 30: `docker images` output, saved as `kube-images`
-- Task 31: `kubectl get all` output, saved as `kube-deploy-accounts`
+## Module 4 — Containerize + Kubernetes
+
+### Task 25 — sprint3-plan
+✅ Committed at `screenshots/sprint3-plan.jpeg`. Sprint Backlog held #8 (Docker, L=8), #9 (K8s deploy, L=8), #10 (CD pipeline, XL=13) — all Sprint=Sprint 3.
+
+### Task 27 / 28 — kube-docker-done & kube-kubernetes-done
+**SCREENSHOTS NEEDED.** Stories #8 and #9 are now in **Done** on https://github.com/users/MLinderEq/projects/1. Screenshot the board.
+
+### Task 29 (2 pts) — Dockerfile URL
+https://github.com/MLinderEq/devops-capstone-project/blob/main/Dockerfile
+
+### Tasks 26 / 30 / 31 — IBM Cloud IDE handoff (cluster-only)
+These three artifacts require the IBM Cloud IDE / OpenShift cluster — the local Mac has no Docker / `oc` / ICR access. Once you're in the lab environment, clone main and run:
+
+```bash
+git clone https://github.com/MLinderEq/devops-capstone-project.git
+cd devops-capstone-project
+
+# === Task 30: kube-images ===
+docker build -t accounts .
+docker tag accounts us.icr.io/$SN_ICR_NAMESPACE/accounts:1
+docker push us.icr.io/$SN_ICR_NAMESPACE/accounts:1
+docker images          # ← save this output as kube-images
+
+# === Task 31: kube-deploy-accounts ===
+# Postgres is pre-provisioned by the lab; verify the secret exists first
+oc describe secret postgresql
+
+# Update deploy/deployment.yaml so `image:` references your ICR-tagged image:
+#   image: us.icr.io/$SN_ICR_NAMESPACE/accounts:1
+# (Either edit before applying, or use `oc set image deployment/accounts ...` after.)
+
+oc apply -f deploy/
+oc expose service/accounts
+oc get all             # ← save this output as kube-deploy-accounts
+
+# === Task 26: kube-app-output ===
+# The IDE shows a "preview" button for port 8080 (or `oc get route accounts -o jsonpath='{.spec.host}'`)
+# Open the URL in the IDE's internal browser. The JSON body of GET / is what to capture:
+#   { "name": "Account REST API Service", "version": "1.0" }
+# Save that JSON body as kube-app-output
+```
+
+### Image tag and push (Quiz Q1)
+`docker tag accounts us.icr.io/$SN_ICR_NAMESPACE/accounts:1` — quiz Q1 answer.
 
 ## Module 6 — CD pipeline (pending)
 - Task 32: full Tekton `pipelinerun` log, saved as `pipelinerun.txt`
@@ -328,6 +365,10 @@ Referrer-Policy: strict-origin-when-cross-origin
 | Sprint 1 PR | https://github.com/MLinderEq/devops-capstone-project/pull/11 |
 | ci-build.yaml | https://github.com/MLinderEq/devops-capstone-project/blob/main/.github/workflows/ci-build.yaml |
 | __init__.py (Talisman) | https://github.com/MLinderEq/devops-capstone-project/blob/main/service/__init__.py |
-| Dockerfile | _pending (Module 5)_ |
+| Dockerfile | https://github.com/MLinderEq/devops-capstone-project/blob/main/Dockerfile |
+| deploy/deployment.yaml | https://github.com/MLinderEq/devops-capstone-project/blob/main/deploy/deployment.yaml |
+| deploy/service.yaml | https://github.com/MLinderEq/devops-capstone-project/blob/main/deploy/service.yaml |
 | Sprint 2 PR (CI) | https://github.com/MLinderEq/devops-capstone-project/pull/12 |
 | Sprint 2 PR (Security) | https://github.com/MLinderEq/devops-capstone-project/pull/13 |
+| Sprint 3 PR (Docker) | https://github.com/MLinderEq/devops-capstone-project/pull/14 |
+| Sprint 3 PR (Kubernetes) | https://github.com/MLinderEq/devops-capstone-project/pull/15 |
