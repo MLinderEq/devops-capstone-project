@@ -35,10 +35,10 @@ Tracks answers to all 33 graded tasks across the 6 modules. Status legend: ✅ d
 | 29 | 2 | ✅ | Dockerfile URL |
 | 30 | 2 | 🌥️ | `kube-images` — needs IBM Cloud IDE run |
 | 31 | 2 | 🌥️ | `kube-deploy-accounts` — needs IBM Cloud IDE run |
-| 32 | 5 | ⏳ | Module 6 — `pipelinerun.txt` |
-| 33 | 1 | ⏳ | Module 6 — `cd-pipeline-done` |
+| 32 | 5 | 🌥️ | Module 5 — `pipelinerun.txt` (needs IBM Cloud IDE run) |
+| 33 | 1 | 📸 | Module 5 — `cd-pipeline-done` — CD story in Done |
 
-**Earned so far: 31/55 (after Modules 1–4) · Remaining: 24 pts (Module 4 cluster runs + Module 6 CD)**
+**Earned so far: 31/55 (after Modules 1–4) · Remaining: 24 pts (Module 4 cluster runs + Module 5 CD)**
 
 ---
 
@@ -348,9 +348,74 @@ oc get all             # ← save this output as kube-deploy-accounts
 ### Image tag and push (Quiz Q1)
 `docker tag accounts us.icr.io/$SN_ICR_NAMESPACE/accounts:1` — quiz Q1 answer.
 
-## Module 6 — CD pipeline (pending)
-- Task 32: full Tekton `pipelinerun` log, saved as `pipelinerun.txt`
-- Task 33: move CD story to Done; screenshot `cd-pipeline-done.png`
+## Module 5 — CD Pipeline (Tekton + OpenShift)
+
+User story #10 — "Create a CD pipeline to automate deployment to Kubernetes" (XL=13, Sprint 3). Work branch: `cd-pipeline`. Tekton manifests live in `tekton/` (pvc.yaml, pipeline.yaml, tasks.yaml — starter scaffolding already committed on main).
+
+### Task 32 (5 pts) — pipelinerun.txt
+**Cluster-only.** Run in IBM Cloud IDE / OpenShift sandbox after the pipeline is fully wired:
+```bash
+git clone -b cd-pipeline https://github.com/MLinderEq/devops-capstone-project.git
+cd devops-capstone-project
+
+# Workspace + initial pipeline
+oc create -f tekton/pvc.yml
+oc apply  -f tekton/pipeline.yaml
+
+# Install catalog tasks into the namespace
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/git-clone/0.9/git-clone.yaml
+kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/flake8/0.1/flake8.yaml
+
+# Custom nose task lives in tasks.yaml (Tekton Hub has no nosetests task)
+oc apply -f tekton/tasks.yaml
+
+# Set $GITHUB_ACCOUNT in pipeline.yaml first, then start with the 3 runtime params
+tkn pipeline start cd-pipeline \
+  -p repo-url=https://github.com/MLinderEq/devops-capstone-project \
+  -p branch=cd-pipeline \
+  -p build-image=image-registry.openshift-image-registry.svc:5000/$SN_ICR_NAMESPACE/accounts:1 \
+  -w name=pipeline-workspace,claimName=pipeline-pvc \
+  --showlog
+
+# Capture the run log
+tkn pipelinerun logs --last > pipelinerun.txt
+```
+Required task order in `pipeline.yaml`: **clone → lint → tests → build (runAfter: [lint, tests]) → deploy**. Postgres service must be up before tests run (lab pre-provisions it).
+
+### Task 33 (1 pt) — cd-pipeline-done
+**SCREENSHOT NEEDED.** Move user story #10 to **Done** on https://github.com/users/MLinderEq/projects/1, then capture the board → save as `cd-pipeline-done.png` (or `.jpeg`).
+
+### Checklist (Q1–Q20, 1 pt each — practice assignment)
+All twenty items map to actions performed in the IBM Cloud sandbox; mark ✅ as each is executed there:
+| # | Action | Where |
+|---:|:--|:--|
+| Q1  | Move CD story Sprint Backlog → In Progress, self-assign | GitHub Project |
+| Q2  | Create `cd-pipeline` branch | local/sandbox |
+| Q3  | `nosetests` all-green before automating | sandbox |
+| Q4  | `oc create -f tekton/pvc.yml` + `oc apply -f tekton/pipeline.yaml` | sandbox |
+| Q5  | Install `git-clone` task from Tekton Catalog | sandbox |
+| Q6  | Set `GITHUB_ACCOUNT` env var in pipeline.yaml; run | sandbox |
+| Q7  | Verify initial pipeline definitions work | sandbox |
+| Q8  | Install `flake8` task into namespace | sandbox |
+| Q9  | Add lint task config to pipeline.yaml; run | sandbox |
+| Q10 | Add `nose` task to `tekton/tasks.yaml` | local edit |
+| Q11 | Apply tasks.yaml; verify task created | sandbox |
+| Q12 | Add test task to pipeline.yaml, `runAfter: [clone]` | local edit |
+| Q13 | Confirm Postgres service + pod are running | sandbox |
+| Q14 | Add Buildah build task to pipeline.yaml | local edit |
+| Q15 | Add `openshift-client` deploy task | local edit |
+| Q16 | `oc apply -f tekton/pipeline.yaml` | sandbox |
+| Q17 | Run full pipeline; check run + deploy status | sandbox |
+| Q18 | Commit, push, open PR `cd-pipeline` → main | GitHub |
+| Q19 | `tkn pipelinerun logs --last > pipelinerun.txt` | sandbox |
+| Q20 | Move story → Done; screenshot `cd-pipeline-done` | GitHub Project |
+
+### Graded Quiz answers (100%)
+- **Q1.** Initial `pipeline.yaml` includes definitions for → **The clone task**
+- **Q2.** Install flake8 task command → **`kubectl apply -f https://raw.githubusercontent.com/tektoncd/catalog/main/task/flake8/0.1/flake8.yaml`**
+- **Q3.** Python-requirements bash script lives in `pipeline.yaml` → **False** (it lives in `tasks.yaml`)
+- **Q4.** Build task `runAfter:` → **Lint and tests tasks**
+- **Q5.** Pipeline runtime params → **`repo-url`, `branch`, `build-image`** (3 params)
 
 ---
 
