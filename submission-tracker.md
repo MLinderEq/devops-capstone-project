@@ -348,6 +348,49 @@ oc get all             # ← save this output as kube-deploy-accounts
 ### Image tag and push (Quiz Q1)
 `docker tag accounts us.icr.io/$SN_ICR_NAMESPACE/accounts:1` — quiz Q1 answer.
 
+---
+
+### Expected output shapes (paste real values over these when you run)
+
+**Task 30 — `kube-images`** (output of `docker images` after build + tag)
+```
+REPOSITORY                                   TAG       IMAGE ID       CREATED         SIZE
+us.icr.io/sn-labs-<namespace>/accounts       1         <image-id>     <time> ago      ~180MB
+accounts                                     latest    <image-id>     <time> ago      ~180MB
+python                                       3.9-slim  <base-id>      <weeks> ago     ~125MB
+```
+Note: rows 1 and 2 share the same IMAGE ID — `docker tag` aliases, doesn't duplicate layers. Rubric expects Name, Tag, Image ID, Created, Size (all default columns).
+
+**Task 31 — `kube-deploy-accounts`** (output of `oc get all` after `oc apply` + `oc expose`)
+```
+NAME                            READY   STATUS    RESTARTS   AGE
+pod/accounts-<hash>-<suffix>    1/1     Running   0          <age>
+pod/postgresql-1-<suffix>       1/1     Running   0          <age>
+
+NAME                                  DESIRED   CURRENT   READY   AGE
+replicaset.apps/accounts-<hash>       1         1         1       <age>
+
+NAME                       READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/accounts   1/1     1            1           <age>
+
+NAME                 TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
+service/accounts     ClusterIP   <cluster-ip>     <none>        8080/TCP   <age>
+service/postgresql   ClusterIP   <cluster-ip>     <none>        5432/TCP   <age>
+
+NAME                                HOST/PORT                                                       PATH   SERVICES   PORT   TERMINATION   WILDCARD
+route.route.openshift.io/accounts   accounts-<ns>.<cluster>.containers.appdomain.cloud                     accounts   http                 None
+```
+Required sections: deployment, pods, replica sets, service — all four present. The `route.route.openshift.io/accounts` row appears only after `oc expose service/accounts`.
+
+**Task 26 — `kube-app-output`** (JSON body from `GET /` on the exposed route)
+```json
+{
+  "name": "Account REST API Service",
+  "version": "1.0"
+}
+```
+Literal response from `service/routes.py:index()`. Capture the JSON body only — not the HTTP headers, not the browser chrome.
+
 ## Module 5 — CD Pipeline (Tekton + OpenShift)
 
 User story #10 — "Create a CD pipeline to automate deployment to Kubernetes" (XL=13, Sprint 3). Work branch: `cd-pipeline`. Tekton manifests live in `tekton/` (pvc.yaml, pipeline.yaml, tasks.yaml — starter scaffolding already committed on main).
