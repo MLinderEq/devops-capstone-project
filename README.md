@@ -1,15 +1,21 @@
-# DevOps Capstone Template
+# DevOps Capstone Project — Customer Accounts Microservice
 
+[![Build Status](../../actions/workflows/ci.yml/badge.svg)](../../actions/workflows/ci.yml)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Python 3.9](https://img.shields.io/badge/Python-3.9-green.svg)](https://shields.io/)
 
-This repository contains the starter code for the project in [**IBM-CD0285EN-SkillsNetwork DevOps Capstone Project**](https://www.coursera.org/learn/devops-capstone-project?specialization=devops-and-software-engineering) which is part of the [**IBM DevOps and Software Engineering Professional Certificate**](https://www.coursera.org/professional-certificates/devops-and-software-engineering)
+This repository contains my submission for the [**IBM-CD0285EN-SkillsNetwork DevOps Capstone Project**](https://www.coursera.org/learn/devops-capstone-project?specialization=devops-and-software-engineering), the final project of the [**IBM DevOps and Software Engineering Professional Certificate**](https://www.coursera.org/professional-certificates/devops-and-software-engineering).
 
-## Usage
+The project builds a **Customer Accounts microservice** using Agile planning, test-driven development, continuous integration, security hardening (CORS + security headers), containerization with Docker, and continuous deployment to Kubernetes / OpenShift via a Tekton CD pipeline.
 
-You should use this template to start your DevOps Capstone project. It contains all of the code that you will need to get started.
+## Agile planning
 
-Do Not fork this code! It is meant to be used by pressing the  <span style=color:white;background:green>**Use this Template**</span> button in GitHub. This will copy the code to your own repository with no connection back to the original repository like a fork would. This is what you want.
+Sprint 0 deliverables — the planning artifacts that drive the rest of the project — are managed in this repo:
+
+- A Kanban board built with **GitHub Projects**, with columns: **New Issues / Ice Box / Product Backlog / Sprint Backlog / Done**
+- A standard [user story template](user-story.md) used for every backlog item
+- Labels: `technical debt`, `enhancement`
+- Story-point estimates on the scale **S = 3, M = 5, L = 8, XL = 13**
 
 ## Development Environment
 
@@ -124,7 +130,9 @@ You can now perform Tekton development locally, just like in the Cloud IDE lab e
 
 ## Author
 
-[John Rofrano](https://www.coursera.org/instructor/johnrofrano), Senior Technical Staff Member, DevOps Champion, @ IBM Research, and Instructor @ Coursera
+Submitted by **MLinderEq** as part of the IBM DevOps and Software Engineering Professional Certificate on Coursera.
+
+Starter code by [John Rofrano](https://www.coursera.org/instructor/johnrofrano), Senior Technical Staff Member, DevOps Champion @ IBM Research, and Instructor @ Coursera. Original template: [ibm-developer-skills-network/aolwx-devops-capstone-template](https://github.com/ibm-developer-skills-network/aolwx-devops-capstone-template).
 
 ## License
 
